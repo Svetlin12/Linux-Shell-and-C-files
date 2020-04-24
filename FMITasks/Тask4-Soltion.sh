@@ -23,7 +23,7 @@ if [ $# -eq 2 ]; then
 		if [ ${NUMHARDLINKS} -ge ${NUMBER} ]; then
 			echo "${FILENAME}"
 		fi
-	done < <(gfind "${DIRECTORY}" -type f 2>/dev/null -printf "%n %p\n")   
+	done < <(find "${DIRECTORY}" -type f 2>/dev/null -printf "%n %p\n")   
 elif [ $# -eq 1 ]; then
 	find -L "${DIRECTORY}" -type l 2>/dev/null -print0 | xargs -0 -I {} basename {}
 fi
