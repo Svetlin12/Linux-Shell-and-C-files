@@ -7,6 +7,10 @@ fi
 
 if [ $1 == "-n" ]; then
 	N=$2
+	if [ $(egrep -c "^[0-9]+$" <(echo "${N}")) -eq 0 ]; then
+		echo "expected a number after -n"
+		exit 2
+	fi
 fi
 
 for i; do
@@ -26,9 +30,9 @@ for i; do
 	fi
 
 	IDF=$(echo "${i}" | sed -E 's/(.*).log/\1/')
-	LINE=$(cat "${i}" | sed -E "s/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}) (.*)/\1 ${IDF} \2/") 	
+	LINES=$(cat "${i}" | sed -E "s/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}) (.*)/\1 ${IDF} \2\n/") 	
 
-	OUTPUT="${OUTPUT}${LINE}\n"
+	OUTPUT="${OUTPUT}${LINES}\n"
 done
 
 if [ -z ${N} ]; then
