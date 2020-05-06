@@ -20,7 +20,7 @@ void errorHandler(int code, int fd1, int fd2, int fd3, int errnum)
 		close(fd3);
 
 	errno = errnum;
-	err(code, "error:");
+	err(code, "error");
 }
 
 int main()
