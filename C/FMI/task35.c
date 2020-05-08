@@ -40,36 +40,59 @@ int main(int argc, char** argv)
 
 	if (access(argv[2], R_OK) == -1)
 		errx(5, "file %s is not readable", argv[2]);
+	
+	if (access(argv[3], F_OK) != -1 && access(argv[3], W_OK) == -1)
+		errx(6, "file %s is not writable", argv[3]);
 
 	int fd1 = open(argv[1], O_RDONLY);
 	if (fd1 == -1)
-		errorHandler(6, errno, fd1, -1, -1);
-
+	{
+		int olderrno = errno;
+		errorHandler(7, olderrno, fd1, -1, -1);
+	}
+	
 	int fd2 = open(argv[2], O_RDONLY);
 	if (fd2 == -1)
-		errorHandler(7, errno, fd1, fd2, -1);
-
+	{
+		int olderrno = errno;
+		errorHandler(8, olderrno, fd1, fd2, -1);
+	}
+	
 	int fd3 = open(argv[3], O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR);
 	if (fd3 == -1)
-		errorHandler(8, errno, fd1, fd2, fd3);
+	{	
+		int olderrno = errno;
+		errorHandler(9, olderrno, fd1, fd2, fd3);
+	}
 	
 	struct stat stFile1;
 	struct stat stFile2;
 
 	if (stat(argv[1], &stFile1) == -1)
-		errorHandler(9, errno, fd1, fd2, fd3);
-
+	{
+		int olderrno = errno;
+		errorHandler(10, olderrno, fd1, fd2, fd3);
+	}
 	if (stat(argv[2], &stFile2) == -1)
-		errorHandler(10, errno, fd1, fd2, fd3);
-
+	{
+		int olderrno = errno;
+		errorHandler(11, olderrno, fd1, fd2, fd3);
+	}
+	
 	if (stFile1.st_size % sizeof(uint8_t) != 0)
-		errorHandler(11, errno, fd1, fd2, fd3);
-
+	{
+		int olderrno = errno;
+		errorHandler(12, olderrno, fd1, fd2, fd3);
+	}
+	
 	if (stFile2.st_size % sizeof(uint8_t) != 0)
-		errorHandler(12, errno, fd1, fd2, fd3);
-
+	{
+		int olderrno = errno;
+		errorHandler(13, olderrno, fd1, fd2, fd3);
+	}
+	
 	if (stFile1.st_size != stFile2.st_size)
-		errx(13, "The two files are of different length");
+		errx(14, "The two files are of different length");
 
 	struct tuple {
 		uint16_t offset;
@@ -92,18 +115,26 @@ int main(int argc, char** argv)
 			t.originalByte = byte1;
 			t.newByte = byte2;
 			if (write(fd3, &t, sizeof(t)) != sizeof(t))
-				errorHandler(14, errno, fd1, fd2, fd3);
+			{
+				int olderrno = errno;
+				errorHandler(15, olderrno, fd1, fd2, fd3);
+			}
 		}
 
 		currPos++;
 	}	
 
 	if (readSize1 == -1)
-		errorHandler(15, errno, fd1, fd2, fd3);
-
+	{
+		int olderrno = errno;
+		errorHandler(16, olderrno, fd1, fd2, fd3);
+	}
 	if (readSize2 == -1)
-		errorHandler(16, errno, fd1, fd2, fd3);
-
+	{
+		int olderrno = errno;
+		errorHandler(17, olderrno, fd1, fd2, fd3);
+	}
+	
 	close(fd1);
 	close(fd2);
 	close(fd3);
