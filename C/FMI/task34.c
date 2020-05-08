@@ -44,28 +44,34 @@ int main(int argc, char** argv)
 	if (access(argv[2], R_OK) == -1)
 		errx(5, "file %s is not readable", argv[2]);
 
+	if (access(argv[3], F_OK) != -1 && access(argv[3], W_OK) == -1)
+		errx(6, "file %s is not writable", argv[3]);
+
+	if (access(argv[4], F_OK) != -1 && access(argv[4], W_OK) == -1)
+		errx(7, "file %s is not writable", argv[4]);
+
 	int f1 = open(argv[1], O_RDONLY);
 	if (f1 == -1)
-		errorHandler(6, errno, f1, -1, -1, -1);
+		errorHandler(8, errno, f1, -1, -1, -1);
 
 	struct stat st;
 	if (stat(argv[1], &st) == -1)
-		errorHandler(7, errno, f1, -1, -1, -1);
+		errorHandler(9, errno, f1, -1, -1, -1);
 
 	if (st.st_size % sizeof(uint8_t) != 0)
-		errx(8, "file %s does not consist only of uint8_t type numbers", argv[1]);
+		errx(10, "file %s does not consist only of uint8_t type numbers", argv[1]);
 
 	int f2 = open(argv[2], O_RDONLY);
 	if (f2 == -1)
-		errorHandler(9, errno, f1, f2, -1, -1);
+		errorHandler(11, errno, f1, f2, -1, -1);
 
 	int f3 = open(argv[3], O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR);
 	if (f3 == -1)
-		errorHandler(10, errno, f1, f2, f3, -1);
+		errorHandler(12, errno, f1, f2, f3, -1);
 
 	int f4 = open(argv[4], O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR);
 	if (f4 == -1)
-		errorHandler(11, errno, f1, f2, f3, f4);	
+		errorHandler(13, errno, f1, f2, f3, f4);	
 
 	struct format
 	{
@@ -78,10 +84,10 @@ int main(int argc, char** argv)
 	struct format second;
 	
 	if (stat(argv[2], &st) == -1)
-		errorHandler(12, errno, f1, f2, f3, f4);
+		errorHandler(14, errno, f1, f2, f3, f4);
 
 	if (st.st_size % sizeof(first) != 0)
-		errx(13, "file %s does not consist only of tripples (uint16_t, uint8_t, uint8_t)", argv[2]);
+		errx(15, "file %s does not consist only of tripples (uint16_t, uint8_t, uint8_t)", argv[2]);
 
 	ssize_t readSize;
 	uint16_t currPos = 0;
@@ -89,7 +95,7 @@ int main(int argc, char** argv)
 	{
 		off_t location = lseek(f1, first.offset*sizeof(uint8_t), SEEK_SET);	
 		if (location == -1)
-			errorHandler(14, errno, f1, f2, f3, f4);
+			errorHandler(16, errno, f1, f2, f3, f4);
 
 		uint8_t num;
 		ssize_t readBytes;
@@ -103,7 +109,7 @@ int main(int argc, char** argv)
 				isFirstByte = false;
 
 			if (write(f3, &num, sizeof(num)) != sizeof(num))
-			       errorHandler(15, errno, f1, f2, f3, f4);
+			       errorHandler(17, errno, f1, f2, f3, f4);
 
 			cnt++;
 			if (cnt == first.len)
@@ -112,19 +118,19 @@ int main(int argc, char** argv)
 		}
 
 		if (readBytes == -1)
-			errorHandler(16, errno, f1, f2, f3, f4);
+			errorHandler(18, errno, f1, f2, f3, f4);
 		
 		second.special = 0;
 		second.len = first.len;
 		second.offset = currPos;
 		if (!isFirstByte && write(f4, &second, sizeof(second)) != sizeof(second))
-			errorHandler(17, errno, f1, f2, f3, f4);
+			errorHandler(19, errno, f1, f2, f3, f4);
 
 		currPos += first.len;
 	}
 
 	if (readSize == -1)
-		errorHandler(18, errno, f1, f2,f3, f4);
+		errorHandler(20, errno, f1, f2,f3, f4);
 
 
 	close(f1);
