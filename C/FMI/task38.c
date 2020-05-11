@@ -46,7 +46,7 @@ int main(int argc, char** argv)
 		char c;
 		while (read(0, &c, 1) > 0)
 		{
-			char* at = strchr(argv[1], c);
+			char* at = strrchr(argv[1], c);
 			if (at != NULL)
 			{
 				int index = (int)(at - argv[1]);
