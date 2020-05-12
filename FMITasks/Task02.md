@@ -7,4 +7,4 @@ has used)* на процесите на всеки потребител. Ако 
 
 *Забележка: Приемаме, че изхода в колоната RSS е число в същата мерна единица като числото, подадено като аргумент.*
 
-[Solution](https://github.com/Svetlin12/Linux-Shell/blob/master/FMITasks/Task2-Solution.sh)
+[Solution](https://github.com/Svetlin12/Linux-Shell-and-C-files/blob/master/FMITasks/Task02-Solution.sh)
