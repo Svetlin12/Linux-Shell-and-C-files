@@ -38,4 +38,4 @@
 
 Изходът трябва да бъде глобално сортиран по време възходящо.
 
-[Solution](https://github.com/Svetlin12/Linux-Shell-and-C-files/blob/master/FMITasks/Task9-Solution.sh)
+[Solution](https://github.com/Svetlin12/Linux-Shell-and-C-files/blob/master/FMITasks/Task09-Solution.sh)
