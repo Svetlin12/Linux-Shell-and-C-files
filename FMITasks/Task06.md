@@ -32,4 +32,4 @@ $ ./task1.sh ./kern/ amd64
 
 vmlinuz-4.12.4-amd64
 
-[Solution](https://github.com/Svetlin12/Linux-Shell/blob/master/FMITasks/Task6-Solution.sh)
+[Solution](https://github.com/Svetlin12/Linux-Shell-and-C-files/blob/master/FMITasks/Task06-Solution.sh)
