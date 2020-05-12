@@ -38,4 +38,4 @@
 
 **/dst/2/1/foobar.txt**
 
-[Solution](https://github.com/Svetlin12/Linux-Shell/blob/master/FMITasks/Task5-Solution.sh)
+[Solution](https://github.com/Svetlin12/Linux-Shell-and-C-files/blob/master/FMITasks/Task05-Solution.sh)
