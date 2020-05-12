@@ -42,7 +42,7 @@ educat10n
 
 -42
 
-[Solution-a)](https://github.com/Svetlin12/Linux-Shell/blob/master/FMITasks/Task7-Solution1.sh)
+[Solution-a)](https://github.com/Svetlin12/Linux-Shell-and-C-files/blob/master/FMITasks/Task07-Solution1.sh)
 
 [Solution-b)](https://github.com/Svetlin12/Linux-Shell/blob/master/FMITasks/Task7-Solution2.sh)
 
