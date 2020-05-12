@@ -3,4 +3,4 @@
 Напишете скрипт, който извежда името на потребителския акаунт, в чиято home директория има най-скоро променен обикновен файл
 и кой е този файл. Напишете скрипта с подходящи проверки, така че да бъде валиден инструмент.
 
-[Solution](https://github.com/Svetlin12/Linux-Shell-and-C-files/blob/master/FMITasks/Task12-Solution)
+[Solution](https://github.com/Svetlin12/Linux-Shell-and-C-files/blob/master/FMITasks/Task12-Solution.sh)
