@@ -9,4 +9,4 @@
 
 *Забележка:* За удобство приемаме, че ако има подаден втори параметър, то той е число.
 
-[Solution](https://github.com/Svetlin12/Linux-Shell/blob/master/FMITasks/%D0%A2ask4-Soltion.sh)
+[Solution](https://github.com/Svetlin12/Linux-Shell-and-C-files/blob/master/FMITasks/%D0%A2ask04-Soltion.sh)
