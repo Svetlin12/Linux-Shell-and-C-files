@@ -53,4 +53,4 @@
 
 **ENABLED_OPTIONS_EXTRA=e f**
 
-[Solution](https://github.com/Svetlin12/Linux-Shell/blob/master/FMITasks/Task3-Solution.sh)
+[Solution](https://github.com/Svetlin12/Linux-Shell-and-C-files/blob/master/FMITasks/Task03-Solution.sh)
