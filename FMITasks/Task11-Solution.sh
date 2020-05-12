@@ -19,10 +19,10 @@ fi
 
 ### a)
 
-FOOPCOUNT=$(ps -u "${FOO}" | wc -l)
+FOOPCOUNT=$(ps -u "${FOO}" --no-headers | wc -l)
 
 while read _USER; do
-	USERPCOUNT=$(ps -u "${_USER}" | wc -l)
+	USERPCOUNT=$(ps -u "${_USER}" --no-headers | wc -l)
 	
 	if [ "${USERPCOUNT}" -gt "${FOOPCOUNT}" ]; then
 		echo "${_USER}"
