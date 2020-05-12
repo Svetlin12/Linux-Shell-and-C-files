@@ -31,9 +31,9 @@ if [ -n "${FILENAME}" -a ! -w "${FILENAME}" ]; then
 	exit 5
 fi
 
-BROKENSYMLINKS=$(find "${DIRNAME}" -type l ! -exec test -e {} \; -print | wc -l);
-SYMLINKS=$(find "${DIRNAME}" -type l -exec test -e {} \; -print)
-DESTINATION=$(find "${DIRNAME}" -type l -exec test -e {} \; -print | xargs -I {} readlink {});
+BROKENSYMLINKS=$(find "${DIRNAME}" -type l ! -exec test -e {} \; -print 2>/dev/null | wc -l);
+SYMLINKS=$(find "${DIRNAME}" -type l -exec test -e {} \; -print 2>/dev/null)
+DESTINATION=$(find "${DIRNAME}" -type l -exec test -e {} \; -print 2>/dev/null | xargs -I {} readlink {});
 
 COMBINED=$(paste <(echo "${SYMLINKS}") <(echo "${DESTINATION}"))
 
