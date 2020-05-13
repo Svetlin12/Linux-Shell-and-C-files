@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 		while (read(0, &c, 1) > 0)
 		{
 			if (strchr(argv[2], c) == NULL)
-				printf("%c", c);		
+				write(1, &c, sizeof(c));
 		}
 	}
 	else if (argc == 3 && strcmp(argv[1], "-s") == 0)
@@ -28,11 +28,11 @@ int main(int argc, char** argv)
 				isFirst = true;
 			if (strchr(argv[2], c) != NULL && isFirst)
 			{
-				printf("%c", c);
+				write(1, &c, sizeof(c));
 				isFirst = false;
 			}
 			else if (strchr(argv[2], c) == NULL)
-			       printf("%c", c);	
+			       write(1, &c, sizeof(c));
 			prevChar = c;
 		}
 	}
@@ -50,10 +50,10 @@ int main(int argc, char** argv)
 			if (at != NULL)
 			{
 				int index = (int)(at - argv[1]);
-				printf("%c", argv[2][index]);
+				write(1, &argv[2][index], sizeof(argv[2][index]));
 			}
 			else 
-				printf("%c", c);
+				write(1, &c, sizeof(c));
 		}
 	}
 	else	
