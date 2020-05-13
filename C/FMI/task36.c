@@ -19,24 +19,12 @@ void readFromFd(bool isOptionActivated, int fd)
 	{
 		if (isOptionActivated && isStart)
 		{
-			char num = cnt + '0';
-			if (write(1, &num, sizeof(num)) != sizeof(num))
-			{
-				int olderrno = errno;
-				close(fd);
-				errno = olderrno;
-				err(2, "could not write to STDIN");
-			}
+			setbuf(stdout, NULL);
+			fprintf(stdout, "%d ", cnt);
 			isStart = false;
 		}
 		
-		if (write(1, &c, sizeof(c)) != sizeof(c))
-		{
-			int olderrno = errno;
-			close(fd);
-			errno = olderrno;
-			err(3, "could not write to STDIN");
-		}
+		write(1, &c, sizeof(c));
 
 		if (c == '\n')
 		{
