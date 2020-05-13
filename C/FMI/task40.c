@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 		while (read(0, &c, 1) > 0)
 		{
 			if (cnt == number || c == '\n')
-				printf("%c", c);
+				write(1, &c, sizeof(c));
 			cnt++;
 		}
 	}
@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 		while (read(0, &c, 1) > 0)
 		{
 			if ((cnt >= first && cnt <= last) || c == '\n')
-				printf("%c", c);
+				write(1, &c, sizeof(c));
 			cnt++;
 		}
 	}	
@@ -62,9 +62,9 @@ int main(int argc, char** argv)
 				cnt++;
 			
 			if (cnt == numColumn && c != '\n' && c != delimiter)
-				printf("%c", c);
+				write(1, &c, sizeof(c));
 		}
-		printf("\n");
+		write(1, "\n", 1);
 	}
 	else if (argc == 5 && strcmp(argv[1], "-d") == 0 && strlen(argv[4]) == 3)
 	{
@@ -94,9 +94,9 @@ int main(int argc, char** argv)
 			}
 
 			if (cnt >= firstColumn && cnt <= lastColumn && c != '\n')
-				printf("%c", c);
+				write(1, &c, sizeof(c));
 		}
-		printf("\n");
+		write(1, "\n", 1);
 	}
 	else
 		errx(9, "usage: ./main -c [0-9]\n./main -c [0-9]-[0-9]\n./main -d [char] -f [0-9]\n./main -d [char] -f [0-9]-[0-9]");
