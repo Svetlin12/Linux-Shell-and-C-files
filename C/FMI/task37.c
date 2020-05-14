@@ -45,24 +45,15 @@ int main(int argc, char** argv)
 
 	int patch = open(argv[1], O_RDONLY);
 	if (patch == -1)
-	{
-		int olderrno = errno;
-		errorHandler(7, olderrno, patch, -1, -1);
-	}
+		errorHandler(7, errno, patch, -1, -1);
 
 	int f1 = open(argv[2], O_RDONLY);
 	if (f1 == -1)
-	{
-		int olderrno = errno;
-		errorHandler(8, olderrno, patch, f1, -1);
-	}
+		errorHandler(8, errno, patch, f1, -1);
 
 	int f2 = open(argv[3], O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR);
 	if (f2 == -1)
-	{
-		int olderrno = errno;
-		errorHandler(9, olderrno, patch, f1, f2);
-	}
+		errorHandler(9, errno, patch, f1, f2);
 
 	struct tuple {
 		uint16_t offset;
@@ -74,43 +65,28 @@ int main(int argc, char** argv)
 
 	struct stat st;
 	if (stat(argv[1], &st) == -1)
-	{
-		int olderrno = errno;
-		errorHandler(10, olderrno, patch, f1, f2);
-	}
+		errorHandler(10, errno, patch, f1, f2);
 
 	if (st.st_size % sizeof(t) != 0)
 		errx(11, "file %s does not consist of only tuples", argv[1]);
 	
 	if (stat(argv[2], &st) == -1)
-	{
-		int olderrno = errno;
-		errorHandler(12, olderrno, patch, f1, f2);
-	}
+		errorHandler(12, errno, patch, f1, f2);
 
 	if (st.st_size % sizeof(uint8_t))
 		errx(13, "file %s does not consist of only uint8_t types numbers", argv[2]);
 
 	uint8_t* buffer = malloc(st.st_size*sizeof(uint8_t));
 	if (buffer == NULL)
-	{
-		int olderrno = errno;
-		errorHandler(14, olderrno, patch, f1, f2);
-	}
+		errorHandler(14, errno, patch, f1, f2);
 
 	size_t readSz = read(f1, buffer, st.st_size*sizeof(uint8_t));	
 	if (readSz != st.st_size*sizeof(uint8_t))
-	{
-		int olderrno = errno;
-		errorHandler(15, olderrno, patch, f1, f2);
-	}
+		errorHandler(15, errno, patch, f1, f2);
 
 	size_t writeSz = write(f2, buffer, st.st_size*sizeof(uint8_t));
 	if (writeSz != st.st_size*sizeof(uint8_t))
-	{
-		int olderrno = errno;
-		errorHandler(16, olderrno, patch, f1, f2);
-	}
+		errorHandler(16, errno, patch, f1, f2);
 
 	free(buffer);
 	
@@ -119,37 +95,22 @@ int main(int argc, char** argv)
 	{
 		off_t location1 = lseek(f1, t.offset*sizeof(uint8_t), SEEK_SET);
 		if (location1 == -1)
-		{
-			int olderrno = errno;
-			errorHandler(17, olderrno, patch, f1, f2);
-		}
+			errorHandler(17, errno, patch, f1, f2);
 
 		off_t location2 = lseek(f2, t.offset*sizeof(uint8_t), SEEK_SET);
 		if (location2 == -1)
-		{
-			int olderrno = errno;
-			errorHandler(18, olderrno, patch, f1, f2);
-		}
+			errorHandler(18, errno, patch, f1, f2);
 
 		uint8_t num;
 		if (read(f1, &num, sizeof(num)) != sizeof(num))
-		{
-			int olderrno = errno;
-			errorHandler(19, olderrno, patch, f1, f2);
-		}
+			errorHandler(19, errno, patch, f1, f2);
 		
 		if (num != t.originalByte || write(f2, &t.newByte, sizeof(t.newByte)) != sizeof(t.newByte))
-		{
-			int olderrno = errno;
-			errorHandler(20, olderrno, patch, f1, f2);
-		}
+			errorHandler(20, errno, patch, f1, f2);
 	}	
 
 	if (readSize == -1)
-	{
-		int olderrno = errno;
-		errorHandler(21, olderrno, patch, f1, f2);
-	}
+		errorHandler(21, errno, patch, f1, f2);
 
 	close(patch);
 	close(f1);
