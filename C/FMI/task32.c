@@ -32,10 +32,7 @@ int main()
 
 	struct stat st;
 	if (stat("f1", &st) == -1)
-	{
-		int olderrno = errno;
-		errorHandler(1, -1, -1, -1, olderrno);
-	}
+		errorHandler(1, -1, -1, -1, errno);
 
 	// check if f1 has even count of numbers - otherwise we would not be able to cycle through it correctly
 	if (st.st_size % sizeof(struct pair) != 0)
@@ -50,24 +47,15 @@ int main()
 
 	int fd1 = open("f1", O_RDONLY);
 	if (fd1 == -1)
-	{
-		int olderrno = errno;
-		errorHandler(4, fd1, -1, -1, olderrno);
-	}
+		errorHandler(4, fd1, -1, -1, errno);
 
 	int fd2 = open("f2", O_RDONLY);
 	if (fd2 == -1)
-	{
-		int olderrno = errno;
-		errorHandler(5, fd1, fd2, -1, olderrno);
-	}
+		errorHandler(5, fd1, fd2, -1, errno);
 
 	int fd3 = open("result", O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR);
 	if (fd3 == -1)
-	{
-		int olderrno = errno;
-		errorHandler(6, fd1, fd2, fd3, olderrno);
-	}
+		errorHandler(6, fd1, fd2, fd3, errno);
 
 	struct pair p;
 
@@ -75,20 +63,14 @@ int main()
 	{
 		off_t pos = lseek(fd2, (p.start - 1)*sizeof(uint32_t), SEEK_SET);
 		if (pos == -1)
-		{
-			int olderrno = errno;
-			errorHandler(7, fd1, fd2, fd3, olderrno);
-		}
+			errorHandler(7, fd1, fd2, fd3, errno);
 
 		uint32_t num;
 		uint32_t cnt = 0;
 		while(read(fd2, &num, sizeof(num)) > 0)
 		{
 			if (write(fd3, &num, sizeof(num)) != sizeof(num))
-			{
-				int olderrno = errno;
-				errorHandler(8, fd1, fd2, fd3, olderrno);
-			}
+				errorHandler(8, fd1, fd2, fd3, errno);
 
 			cnt++;
 			if (cnt == p.len)
