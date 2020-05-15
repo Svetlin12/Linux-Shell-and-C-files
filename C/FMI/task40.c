@@ -5,6 +5,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int isCorrectDigit(char digit)
+{
+	if (digit >= '1' && digit <= '9')
+		return 1;
+	else
+		return 0;
+}
+
 int main(int argc, char** argv)
 {
 	if (argc == 3 && strcmp(argv[1], "-c") == 0 && strlen(argv[2]) == 1)
@@ -13,7 +21,7 @@ int main(int argc, char** argv)
 		int number = (int)(*argv[2]) - '0';
 		int cnt = 0;
 
-		if (*argv[2] < '1' || *argv[2] > '9')
+		if (!isCorrectDigit(*argv[2]))
 			errx(1, "usage: ./main -c [1-9]");
 
 		while (read(0, &c, 1) > 0)
@@ -34,7 +42,7 @@ int main(int argc, char** argv)
 		if (argv[2][0] > argv[2][2])
 			errx(2, "expected interval: [1-9]-[1-9]");
 
-		if (argv[2][0] < '1' || argv[2][0] > '9' || argv[2][2] < '1' || argv[2][2] > '9' || argv[2][1] != '-')
+		if (!isCorrectDigit(argv[2][0]) || !isCorrectDigit(argv[2][2]) || argv[2][1] != '-')
 			errx(3, "usage: ./main -c [1-9]-[1-9]");
 
 		char first = (int)argv[2][0] - '0';
@@ -58,8 +66,8 @@ int main(int argc, char** argv)
 	{
 		if (strcmp(argv[3], "-f") != 0)
 		       errx(4, "expected -f after delimiter");
-		
-		if (*argv[4] < '1' || *argv[4] > '9')
+	
+		if (!isCorrectDigit(*argv[4]))	
 			errx(5, "expected number of column");
 
 		char delimiter = argv[2][0];
@@ -85,8 +93,8 @@ int main(int argc, char** argv)
 	{
 		if (strcmp(argv[3], "-f") != 0)
 			errx(6, "expected -f after delimiter");
-		
-		if (argv[4][0] < '1' || argv[4][0] > '9' || argv[4][2] < '1' || argv[4][2] > '9' || argv[4][1] != '-')
+	
+		if (!isCorrectDigit(argv[4][0]) || !isCorrectDigit(argv[4][2]) || argv[4][1] != '-')	
 			errx(7, "incorrect interval");
 
 		char delimiter = argv[2][0];
