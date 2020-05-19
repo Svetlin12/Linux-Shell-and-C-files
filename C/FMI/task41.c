@@ -6,7 +6,6 @@
 #include <fcntl.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 int main(int argc, char** argv)
 {
@@ -40,32 +39,43 @@ int main(int argc, char** argv)
 		err(7, "error in opening file %s", argv[2]);
 	}
 
-	uint32_t maxSize = 0x10001;
-	uint16_t container[maxSize];
+	uint16_t maxSize = 0xffff;
+	uint16_t size = 256;
+	uint16_t counting[maxSize + 1];
+	uint16_t container[size];
 
-	for (uint32_t i = 0; i < maxSize; i++)
+	for (uint16_t i = 0; i < size; i++)
 		container[i] = 0;
 
-	uint16_t num;
-	ssize_t readSize;
-	while ((readSize=(read(input, &num, sizeof(num)))) == sizeof(num))
-		container[num]++;
-
-	for (uint32_t i = 0; i < maxSize; i++)
+	for (uint16_t i = 0; i <= maxSize; i++)
 	{
-		while (container[i])
+		counting[i] = 0;
+		if (i == maxSize)
+			break;
+	}
+	ssize_t readSize;
+	while ((readSize=read(input, &container, sizeof(container))) > 0)
+	{
+		for (uint16_t i = 0; i < readSize / 2; i++)
+			counting[container[i]]++;
+	}	
+
+	for (uint16_t i = 0; i <= maxSize; i++)
+	{
+		while (counting[i])
 		{
-			num = i;
-			if (write(output, &num, sizeof(num)) != sizeof(num))
+			if (write(output, &i, sizeof(i)) != sizeof(i))
 			{
 				int olderrno = errno;
 				close(input);
 				close(output);
 				errno = olderrno;
-				err(8, "error: could not write to file %s", argv[2]);
+				err(8, "error in writing to file %s", argv[2]);
 			}
-			container[i]--;
+			counting[i]--;
 		}
+		if (i == maxSize)
+			break;
 	}
 
 	if (readSize == -1)
