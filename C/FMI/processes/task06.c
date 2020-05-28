@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 	
 	int status;
 	if (wait(&status) == -1)
-     err(4, "could not execute wait");
+     		err(4, "could not execute wait");
 	
 	if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
 		printf("the executed command is: %s\n", argv[1]);
