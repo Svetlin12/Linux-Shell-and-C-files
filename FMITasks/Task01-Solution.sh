@@ -1,18 +1,15 @@
 #!/bin/bash
 
 if [ $# -ne 1 ]; then
-	echo "Invalid number of arguments!"
+	echo "usage: $0 (dirname)"
 	exit 1
 fi
 
-DIR_PATH="${1}"
+DIRECTORY=$1
 
-if [ ! -d "${DIR_PATH}" ]; then
-	echo "Argument is not a directory!"
+if [ ! -d $1 ] || [ ! -r ${DIRECTORY} ]; then
+	echo "$1 is not a directory or is not readable"
 	exit 2
-elif [ ! -r "$DIR_PATH" ]; then
-	echo "Directory is not readable!"
-	exit 3
 fi
 
-find -L "${DIR_PATH}" -type l 2>/dev/null -print0 | xargs -0 -I {} basename {}
+find ${DIRECTORY} -type l -printf "%Y %f\n" 2>/dev/null | egrep "^[^nl]" | cut -d " " -f2 
