@@ -15,7 +15,6 @@ ALLUSERS=$(ps -e -o user= | sort | uniq)
 
 for USR in ${ALLUSERS}; do
 	
-	PROCESSCNT=$(ps -u "${USR}" -o rss= | sort -n | wc -l)
 	TOTALSIZE=$(ps -u "${USR}" -o rss= | sort -n | awk '{SZ += $1} END{print SZ}')
 	
 	if [ ${TOTALSIZE} -gt ${AIMEDAMOUNT} ]; then
