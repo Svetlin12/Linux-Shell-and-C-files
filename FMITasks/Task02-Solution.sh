@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -ne 1 ]; then
-	echo "Invalid number of arguments! Usage: ./$0 (number)"
+	echo "Invalid number of arguments! Usage: $0 (number)"
 	exit 1
 fi
 
