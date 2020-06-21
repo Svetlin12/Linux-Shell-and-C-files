@@ -1,52 +1,39 @@
 #!/bin/bash
 
-if [ $# -ne 1 -a $# -ne 2 ]; then
-        echo "usage: ./task14.sh dirname [filename]"
+if [ $# -eq 0 ] || [ $# -gt 2 ]; then
+	echo "Invalid argument count. Usage: $0 (dirname) (optional: filename)"
 	exit 1
 fi
 
-DIRNAME=$1
+DIR=${1}
+FILE=${2}
 
-if [ ! -d "${DIRNAME}" ]; then
-	echo "${DIRNAME} is not a directory"
+if [ ! -d "${DIR}" ] || [ ! -r "${DIR}" ]; then
+	echo "${DIR} is not a directory or is not readable"
 	exit 2
 fi
 
-if [ ! -r "${DIRNAME}" ]; then
-	echo "${DIRNAME} is not readable"
+if [ -n "${FILE}" ] && [ ! -w "${FILE}" ]; then
+	echo "${FILE} is not writable"
 	exit 3
 fi
 
-if [ $# -eq 2 ]; then
-	FILENAME=$2
-fi
+BROKEN=$(find "${DIR}" -type l ! -exec test -e {} \; -print 2>/dev/null | wc -l)
+SYMLINKS=$(find "${DIR}" -type l -exec test -e {} \; -printf "%f \n" 2>/dev/null)
+DEST=$(find -L "${DIR}" -xtype l -exec test -e {} \; -printf "%p\n" 2>/dev/null);
 
-if [ -n "${FILENAME}" -a ! -f "${FILENAME}" ]; then
-	echo "${FILENAME} is not a file"
-	exit 4
-fi
-
-if [ -n "${FILENAME}" -a ! -w "${FILENAME}" ]; then
-	echo "${FILENAME} is not readable"
-	exit 5
-fi
-
-BROKENSYMLINKS=$(find "${DIRNAME}" -type l ! -exec test -e {} \; -print 2>/dev/null | wc -l);
-SYMLINKS=$(find "${DIRNAME}" -type l -exec test -e {} \; -print 2>/dev/null)
-DESTINATION=$(find "${DIRNAME}" -type l -exec test -e {} \; -print 2>/dev/null | xargs -I {} readlink {});
-
-COMBINED=$(paste <(echo "${SYMLINKS}") <(echo "${DESTINATION}"))
+COMBINED=$(paste <(echo "${SYMLINKS}") <(echo "${DEST}"))
 
 while read _SYMLINK _DEST; do
-	if [ -n "${FILENAME}" ]; then
-		echo "${_SYMLINK} -> ${_DEST}" >> "${FILENAME}"
+	if [ -n "${FILE}" ]; then
+		echo "${_SYMLINK} -> ${_DEST}" >> "${FILE}"
 	else
 		echo "${_SYMLINK} -> ${_DEST}"
 	fi
-done < <(echo "${COMBINED}") 
+done < <(echo "${COMBINED}")
 
-if [ -n "${FILENAME}" ]; then
-	echo "Broken symlinks: ${BROKENSYMLINKS}" >> "${FILENAME}"
+if [ -n "${_FILE}" ]; then
+	echo "Broken symlinks: ${BROKEN}" >> "${FILE}"
 else
-	echo "Broken symlinks: ${BROKENSYMLINKS}"
+	echo "Broken symlinks: ${BROKEN}"
 fi
