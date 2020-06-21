@@ -32,7 +32,7 @@ while read _SYMLINK _DEST; do
 	fi
 done < <(echo "${COMBINED}")
 
-if [ -n "${_FILE}" ]; then
+if [ -n "${FILE}" ]; then
 	echo "Broken symlinks: ${BROKEN}" >> "${FILE}"
 else
 	echo "Broken symlinks: ${BROKEN}"
