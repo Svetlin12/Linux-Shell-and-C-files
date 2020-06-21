@@ -14,7 +14,7 @@ if [ ! -d "${DIR}" ] || [ ! -r "${DIR}" ]; then
 fi
 
 if [ -n "${FILE}" ] && [ ! -w "${FILE}" ]; then
-	echo "${FILE} is not writable"
+	echo "${FILE} is not writable or does not exist"
 	exit 3
 fi
 
