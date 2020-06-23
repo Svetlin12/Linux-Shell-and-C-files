@@ -1,38 +1,24 @@
 #!/bin/bash
 
-NUMBERS=""
+if [ $# -ne 0 ]; then
+	echo "Invalid argument count. Usage: $0"
+	exit 1
+fi
 
 while read LINE; do
-        if [ $(echo "${LINE}" | egrep "^-?[0-9]+$" | grep -vc "\.") -eq 1 ]; then
-                NUMBERS="${NUMBERS} ${LINE}"
-        fi
+	if [ "$(egrep -xc "[-]?[1-9][0-9]*" <(echo "${LINE}"))" -eq 1 ]; then
+		NUMS=$(echo "${NUMS} ${LINE}")
+	fi
 done
 
-NUMBERS=$(echo "${NUMBERS}" | cut -c 2- | tr " " "\n" | sort -n | uniq)
+while read LINE; do
+	SUM=$(echo "${LINE}" | tr " " "+" |  bc) 
+	SUMS=$(echo "${SUMS} ${SUM}")
+done < <(echo "${NUMS}" | cut -c 2- | tr " " "\n" | sed -E 's/^-//' | sed -E 's/([0-9])/\1 /g')
 
-NUMBERSANDSUMS=""
+SUMS=$(echo "${SUMS}" | cut -c 2- | tr " " "\n")
+NUMS=$(echo "${NUMS}" | cut -c 2- | tr " " "\n")
 
-for i in $NUMBERS; do
-        ABSOLUTE_VALUE=$(echo "${i}" | egrep -o "[0-9]+")
-        DIGITSUM=$(echo "${ABSOLUTE_VALUE}" | sed -E "s/([0-9])/\1 /g" | tr " " "\n" | awk '{sum+=$1} END{print sum}')
-        NUMBERSANDSUMS="${NUMBERSANDSUMS} ${i}+${DIGITSUM}"
-done
+TOTAL=$(paste <(echo "${NUMS}") <(echo "${SUMS}"))
 
-NUMBERSANDSUMS=$(echo "${NUMBERSANDSUMS}" | tr " " "\n" | sort -t "+" -k2 -rn)
-TARGETNUMS=""
-
-MIN=0
-for i in $NUMBERSANDSUMS; do
-        SUM=$(echo "${i}" | cut -d "+" -f2)
-        NUMBER=$(echo "${i}" | cut -d "+" -f1)
-        if [ ${MIN} -eq 0 ]; then
-                MIN=$SUM
-                TARGETNUMS="${TARGETNUMS} ${NUMBER}"
-        elif [ ${MIN} -gt ${SUM} ]; then
-                break
-        elif [ ${MIN} -eq ${SUM} ]; then
-                TARGETNUMS="${TARGETNUMS} ${NUMBER}"
-        fi
-done
-
-echo "${TARGETNUMS}" | cut -c 2- | tr " " "\n" | sort -rn | tail -n 1
+echo "${TOTAL}" | awk '{ if ($2 >= maxSum) {maxSum=$2; if (minNumber > $1) {minNumber = $1} } } END{print minNumber}' 
