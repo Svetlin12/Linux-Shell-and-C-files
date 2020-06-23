@@ -1,42 +1,30 @@
 #!/bin/bash
 
 if [ $# -eq 0 ]; then
-	echo "usage: ./task29.sh [-n N] FILE1 ..."
+	echo "Invalid argument count. Usage: $0 [-n N] (logfile.log)..."
 	exit 1
 fi
 
-if [ $1 == "-n" ]; then
-	N=$2
-	if [ $(egrep -c "^[0-9]+$" <(echo "${N}")) -eq 0 ]; then
-		echo "expected a number after -n"
-		exit 2
-	fi
+if [ $1 = "-n" -a $(egrep -c "^[0-9]+$" <(echo "$2")) -ne 1 ]; then
+	echo "Invalid number following -n option"
+	exit 2
 fi
 
-for i; do
+OUTPUT=$(mktemp)
+N=10
 
-	if [ "${i}" == "-n" ]; then
-		continue 2
-	fi
+for FILE; do
+	
+	[ "${FILE}" = "-n" ] && continue
+	[ $(egrep -c "^[0-9]+$" <(echo "${FILE}")) -eq 1 ] && { N=$2; } && continue
+	[ ! -f "${FILE}" ] && continue
+	[ ! -r "${FILE}" ] && continue
 
-	if [ ! -f "${i}" ]; then
-		echo "${i} is not a file"
-		continue
-	fi
+	IDF=$(echo "${FILE}" | sed -E 's/(.*).log/\1/')
+	sed -E "s/([1-9][0-9]{3}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}) (.*)/\1 ${IDF} \2/" "${FILE}" | tail -"${N}" >> "${OUTPUT}"
 
-	if [ ! -r "${i}" ]; then
-		echo "${i} is not readable"
-		continue
-	fi
+done  
 
-	IDF=$(echo "${i}" | sed -E 's/(.*).log/\1/')
-	LINES=$(cat "${i}" | sed -E "s/([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}) (.*)/\1 ${IDF} \2\n/") 	
+cat "${OUTPUT}" | sort
 
-	OUTPUT="${OUTPUT}${LINES}\n"
-done
-
-if [ -z ${N} ]; then
-	N=10
-fi
-
-echo -e "${OUTPUT}" | sort -t " " -k1,2 | tail -n "${N}"
+rm -- "${OUTPUT}"
