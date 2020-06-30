@@ -44,12 +44,18 @@ int main(int argc, char** argv)
 		err(6, "failed at reading file %s", argv[1]);
 	}
 
-	lseek(fd, 0, SEEK_SET);
+	if (lseek(fd, 0, SEEK_SET) == -1)
+	{
+		int olderrno = errno;
+		close(fd);
+		errno = olderrno;
+		err(7, "error while trying to lseek in file %s", argv[1]);
+	}
 
 	for (int i = 0; i < 256; i++)
 	{
-		uint8_t num = i;
-		while (counting[i])
+		num = i;
+		while (counting[i]--)
 		{
 			if (write(fd, &num, sizeof(num)) != sizeof(num))
 			{
@@ -58,7 +64,6 @@ int main(int argc, char** argv)
 				errno = olderrno;
 				err(7, "failed writing to file %s", argv[1]);
 			}
-			counting[i]--;
 		}
 	}
 
