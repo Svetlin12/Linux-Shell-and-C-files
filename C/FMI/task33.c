@@ -6,7 +6,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 void errorHandler(int code, int fd1, int fd2, int fd3, uint32_t* buffer, int errnum)
 {
