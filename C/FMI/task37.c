@@ -1,59 +1,25 @@
-#include <unistd.h>
-#include <stdint.h>
 #include <err.h>
 #include <errno.h>
-#include <sys/types.h>      
-#include <sys/stat.h>       
-#include <fcntl.h>
 #include <stdlib.h>
-#include <stdio.h>
+#include <stdint.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
-void errorHandler(int code, int errnum, int fd1, int fd2, int fd3)
+void errHandler(int code, int errnum, int fd1, int fd2, int fd3, const char* msg)
 {
-	if (fd1 == -1)
-		close(fd1);
-
-	if (fd2 == -1)
-		close(fd2);
-
-	if (fd3 == -1)
-		close(fd3);
-
+	if (fd1 != -1) close(fd1);
+	if (fd2 != -1) close(fd2);
+	if (fd3 != -1) close(fd3);
 	errno = errnum;
-	err(code, "error code: %d", code);
+	err(code, "%s", msg);
 }
 
 int main(int argc, char** argv)
 {
 	if (argc != 4)
-		errx(1, "usage: ./main filename1.bin filename2.bin filename3.bin");
-
-	if (access(argv[1], F_OK) == -1)
-		errx(2, "%s is not a file", argv[1]);
-
-	if (access(argv[1], R_OK) == -1)
-		errx(3, "file %s is not readable", argv[1]);
-
-	if (access(argv[2], F_OK) == -1)
-		errx(4, "%s is not file", argv[2]);
-
-	if (access(argv[2], R_OK) == -1)
-		errx(5, "file %s is not readable", argv[2]);
-	
-	if (access(argv[3], F_OK) != -1 && access(argv[3], W_OK) == -1)
-		errx(6, "file %s is not writable", argv[3]);
-
-	int patch = open(argv[1], O_RDONLY);
-	if (patch == -1)
-		errorHandler(7, errno, patch, -1, -1);
-
-	int f1 = open(argv[2], O_RDONLY);
-	if (f1 == -1)
-		errorHandler(8, errno, patch, f1, -1);
-
-	int f2 = open(argv[3], O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR);
-	if (f2 == -1)
-		errorHandler(9, errno, patch, f1, f2);
+		errx(1, "Invalid argument count. Usage: %s (patch.bin) (f1.bin) (f2.bin)", argv[1]);
 
 	struct tuple {
 		uint16_t offset;
@@ -61,59 +27,71 @@ int main(int argc, char** argv)
 		uint8_t newByte;
 	};
 
-	struct tuple t;
-
 	struct stat st;
 	if (stat(argv[1], &st) == -1)
-		errorHandler(10, errno, patch, f1, f2);
+		err(2, "Could not stat %s", argv[1]);
 
-	if (st.st_size % sizeof(t) != 0)
-		errx(11, "file %s does not consist of only tuples", argv[1]);
-	
+	if (!(S_ISREG(st.st_mode)))
+		errx(3, "%s is not a regular file", argv[1]);
+
+	if (!(st.st_mode & S_IRUSR))
+		errx(4, "%s is not readable", argv[1]); 
+
+	if (st.st_size % sizeof(struct tuple) != 0)
+		errx(5, "%s does not comply to the patch.bin structure. It consists of (uint16_t) offset byte, (uint8_t) originalByte and (uint8_t) newByte", argv[1]);
+
 	if (stat(argv[2], &st) == -1)
-		errorHandler(12, errno, patch, f1, f2);
+		err(6, "Could not stat %s", argv[2]);
 
-	if (st.st_size % sizeof(uint8_t))
-		errx(13, "file %s does not consist of only uint8_t types numbers", argv[2]);
+	if (!(S_ISREG(st.st_mode)))
+		errx(7, "%s is not a regular file", argv[2]);
 
-	uint8_t* buffer = malloc(st.st_size*sizeof(uint8_t));
-	if (buffer == NULL)
-		errorHandler(14, errno, patch, f1, f2);
+	if (!(st.st_mode & S_IRUSR))
+		errx(8, "%s is not readable", argv[2]);	
 
-	size_t readSz = read(f1, buffer, st.st_size*sizeof(uint8_t));	
-	if (readSz != st.st_size*sizeof(uint8_t))
-		errorHandler(15, errno, patch, f1, f2);
+	int patch = open(argv[1], O_RDONLY);
+	if (patch == -1)
+		errHandler(9, errno, patch, -1, -1, "Could not open patch file");
 
-	size_t writeSz = write(f2, buffer, st.st_size*sizeof(uint8_t));
-	if (writeSz != st.st_size*sizeof(uint8_t))
-		errorHandler(16, errno, patch, f1, f2);
-
-	free(buffer);
+	int source = open(argv[2], O_RDONLY);
+	if (source == -1)
+		errHandler(10, errno, patch, source, -1, "Could not open source binary file");
 	
-	ssize_t readSize = 0;
-	while ((readSize=read(patch, &t, sizeof(t))) == sizeof(t))
+	int dest = open(argv[3], O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR);
+	if (dest == -1)
+		errHandler(11, errno, patch, source, dest, "Could not open destination binary file");
+
+	struct tuple t;
+	if (read(patch, &t, sizeof(t)) == -1)
+		errHandler(12, errno, patch, source, dest, "Error occurred while reading from patch file");
+	
+	ssize_t readSize;
+	uint8_t byte;
+	uint16_t pos = 0;
+	while ((readSize=read(source, &byte, sizeof(byte))) == sizeof(byte))
 	{
-		off_t location1 = lseek(f1, t.offset*sizeof(uint8_t), SEEK_SET);
-		if (location1 == -1)
-			errorHandler(17, errno, patch, f1, f2);
-
-		off_t location2 = lseek(f2, t.offset*sizeof(uint8_t), SEEK_SET);
-		if (location2 == -1)
-			errorHandler(18, errno, patch, f1, f2);
-
-		uint8_t num;
-		if (read(f1, &num, sizeof(num)) != sizeof(num))
-			errorHandler(19, errno, patch, f1, f2);
+		if (pos == t.offset && byte == t.originalByte)
+		{
+			if (write(dest, &t.newByte, sizeof(t.newByte)) != sizeof(t.newByte))
+				errHandler(13, errno, patch, source, dest, "Error occurred while writing to destination file");
+			if (read(patch, &t, sizeof(t)) == -1)
+				errHandler(14, errno, patch, source, dest, "Error occured while reading from patch file");
 		
-		if (num != t.originalByte || write(f2, &t.newByte, sizeof(t.newByte)) != sizeof(t.newByte))
-			errorHandler(20, errno, patch, f1, f2);
-	}	
+			pos += 1;
+			continue;
+		}
+
+		if (write(dest, &byte, sizeof(byte)) != sizeof(byte))
+			errHandler(15, errno, patch, source, dest, "Error occurred while writing to destination file");
+		
+		pos += 1;
+	}
 
 	if (readSize == -1)
-		errorHandler(21, errno, patch, f1, f2);
-
+		errHandler(16, errno, patch, source, dest, "Error occured while reading from source file");
+	
 	close(patch);
-	close(f1);
-	close(f2);
+	close(source);
+	close(dest);
 	exit(0);
 }
