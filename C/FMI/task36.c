@@ -1,87 +1,88 @@
 #include <err.h>
 #include <errno.h>
-#include <unistd.h>
-#include <stdbool.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
 
 int cnt = 1;
 
-void readFromFd(bool isOptionActivated, int fd) 
+void readFrom(int fd, int isOptionActivated)
 {
-	char c;
-	bool isStart = true;
-	while (read(fd, &c, 1) > 0)
+	int buffSize = 256, isNewline = 1;
+	if (isOptionActivated == 1)
+		buffSize = 1;
+	char buff[buffSize];
+	ssize_t readSize;
+	while ((readSize = read(fd, &buff, sizeof(buff))) > 0)
 	{
-		if (isOptionActivated && isStart)
+		if (isOptionActivated && isNewline)
 		{
 			setbuf(stdout, NULL);
 			fprintf(stdout, "%d ", cnt);
-			isStart = false;
-		}
-		
-		write(1, &c, sizeof(c));
-
-		if (c == '\n')
-		{
+			isNewline = 0;
 			cnt++;
-			isStart = true;
-		}	
+		}
+
+		if (buff[0] == '\n')
+			isNewline = 1;
+
+		write(1, &buff, readSize);
+	}
+
+	if (readSize == -1)
+	{
+		int olderrno = errno;
+		close(fd);
+		errno = olderrno;
+		err(3, "Error occured while reading from file");
 	}
 }
 
 int main(int argc, char** argv)
 {
+	if (argc == 1)
+		readFrom(0, 0);
+	else if (argc == 2 && (strcmp(argv[1], "-n") == 0))
+		readFrom(0, 1);
+	else
+	{
+		int isOptionActivated = 0, i = 1;
+		if (strcmp(argv[1], "-n") == 0)
+		{
+			isOptionActivated = 1;
+			i++;
+		}
 
-	int i = 1;
-	bool isOptionActivated = false;
+		for (; i < argc; i++)
+		{
+			if (strcmp(argv[i], "-") == 0)
+			{
+				readFrom(0, isOptionActivated);
+				continue;
+			}
 	
-	if (argc > 1 && strcmp(argv[1],"-n") == 0)
-	{
-		isOptionActivated = true;
-		i = 2;
-	}
-	else if (argc == 1) 
-	{
-		readFromFd(isOptionActivated, 0);
-	}
+			struct stat st;
+		
+			if (stat(argv[i], &st) == -1)
+				err(1, "Could not stat file %s", argv[i]);
 
-	for (; i < argc; i++)
-	{
-		if (strcmp(argv[i], "-") == 0)
-		{
-			readFromFd(isOptionActivated, 0);
-			continue;
-		}	
+			if (!(S_ISREG(st.st_mode)))
+				errx(2, "%s is not a regular file", argv[i]);
 
-		if (access(argv[i], F_OK) == -1)
-		{
-			printf("%s is not a file\n", argv[i]);
-			continue;
-		}
+			if (!(st.st_mode & S_IRUSR))
+				errx(3, "%s is not readable", argv[i]);
 
-		if (access(argv[i], R_OK) == -1)
-		{
-			printf("file %s is not readable\n", argv[i]);
-			continue;
-		}
+			int fd = open(argv[i], O_RDONLY);
+			if (fd == -1)
+				err(4, "Could not open file %s", argv[i]);
 
-		int fd = open(argv[i], O_RDONLY);
-		if (fd == -1)
-		{
-			int olderrno = errno;
+			readFrom(fd, isOptionActivated);
 			close(fd);
-			errno = olderrno;
-			err(1, "could not open file %s", argv[i]);
 		}
-
-		readFromFd(isOptionActivated, fd);
-
-		close(fd);
 	}
 
 	exit(0);
