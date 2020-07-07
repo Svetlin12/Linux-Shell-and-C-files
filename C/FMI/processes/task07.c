@@ -1,66 +1,36 @@
-#include <unistd.h>
 #include <err.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <unistd.h>
 #include <stdio.h>
 
 int main(int argc, char** argv)
 {
 	if (argc != 4)
-		errx(1, "usage: ./main [command1] [command2] [command3]");
+		errx(1, "Invalid argument count. Usage: %s (command 1) (command 2) (command 3)", argv[0]);
 
-	pid_t pid = fork();
-	int status;
-	
-	if (pid == -1)
-		err(2, "could not fork");
+	for (int i = 1; i < argc; i++)
+	{ 	
+		pid_t pid = fork();
+		if (pid == -1)
+			err(2, "Could not fork");
 
-	if (pid == 0)
-	{
-		if (execlp(argv[1], argv[1], 0) == -1)
-			err(3, "could not execute command %s", argv[1]);
-	}	
-	
-	if (wait(&status) == -1)
-		err(4, "error in wait");
-	
-	if (WIFEXITED(status))
-		printf("pid of process: %d, exit code: %d\n", pid, WEXITSTATUS(status));	
-	
-	pid = fork();
+		if (pid == 0)
+		{
+			if (execlp(argv[i], argv[i], 0) == -1)
+				err(3, "Could not complete execlp");
+		}
 
-	if (pid == -1)
-		err(2, "could not fork");
-
-	if (pid == 0)
-	{
-		if (execlp(argv[2], argv[2], 0) == -1)
-			err(3, "could not execute command %s" ,argv[2]);
+		int status;
+		if (wait(&status) != pid)
+			err(4, "Error occurred while waiting for child to complete");
+		
+		if (WIFEXITED(status))
+			printf("The child who just finished has PID: %d and exit code: %d\n", pid, WEXITSTATUS(status));
+		else
+			warn("The process did not finish well");
 	}
 
-	if (wait(&status) == -1)
-		err(4, "error in wait");
-
-	if (WIFEXITED(status))
-		printf("pid of process: %d, exit code: %d\n", pid, WEXITSTATUS(status));	
-	
-	pid = fork();
-
-	if (pid == -1)
-		err(2, "could not fork");
-
-	if (pid == 0)
-	{
-		if (execlp(argv[3], argv[3], 0) == -1)
-			err(3, "could not execute command %s" ,argv[3]);
-	}
-
-	if (wait(&status) == -1)
-		err(4, "error in wait");
-
-	if (WIFEXITED(status))
-		printf("pid of process: %d, exit code: %d\n", pid, WEXITSTATUS(status));	
-	
 	exit(0);
 }
