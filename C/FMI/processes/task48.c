@@ -32,7 +32,7 @@ int main (int argc, char** argv)
 		errx(1, "usage: ./main [1-9] [program Q] (parameters for Q if needed)"); 
 
 	char* secs = argv[1];
-	if (*secs < '0' || *secs > '9')
+	if (*secs < '1' || *secs > '9')
 		errx(2, "expected number in the range of [1-9]");	
 
 	int unsuccessful = 0;
