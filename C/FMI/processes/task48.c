@@ -69,7 +69,7 @@ int main (int argc, char** argv)
 		if (exitCode != 0 && exitTime - startTime < *secs - '0')
 			unsuccessful++;
 		else 
-			unsuccessful--;
+			unsuccessful = 0;
 	}	
 
 	exit(0);
