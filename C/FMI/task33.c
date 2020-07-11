@@ -105,8 +105,8 @@ int main(int argc, char** argv)
 	if (lseek(temp2, 0, SEEK_SET) == -1)
 		errorHandler(18, fd, temp1, temp2, NULL, errno);
 	
-	uint32_t leftNums[lHalf*sizeof(uint32_t)];
-	uint32_t rightNums[rHalf*sizeof(uint32_t)];
+	uint32_t leftNums[lHalf];
+	uint32_t rightNums[rHalf];
 	
 	res = read(temp1, &leftNums, sizeof(leftNums));
 	if (res != lHalf * sizeof(uint32_t))
