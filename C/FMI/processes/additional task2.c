@@ -46,7 +46,7 @@ int main(int argc, char** argv)
 			{
 				opt[cnt] = 0;
 				cnt = 0;
-				args[currArg] = malloc(i - lastReadEnd);
+				args[currArg] = malloc(i - lastReadEnd + 1);
 				lastReadEnd = i;
 				if (args[currArg] == NULL)
 					err(2, "No memory left to allocate");
