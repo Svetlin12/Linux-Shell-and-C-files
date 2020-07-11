@@ -27,7 +27,7 @@ int main(int argc, char** argv)
 		char c;
 		while (read(0, &c, 1) > 0)
 		{
-			if (findLastOccurrence(argv[2], c) == 0)
+			if (findLastOccurrence(argv[2], c) == NULL)
 				write(1, &c, 1);		
 		}
 	}
