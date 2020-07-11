@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 
 		int noGlobal = 0;
 		if (argc == 3)
-				noGlobal = 1;
+			noGlobal = 1;
 
 		char* toDelete = argv[2];
 		ssize_t readSize, wordSize = strlen(toDelete);
