@@ -18,6 +18,7 @@
 *Пример:*
 * Съдържание на **./kern**:
 
+```
 vmlinuz-3.4.113-amd64
 
 vmlinuz-4.11.12-amd64
@@ -25,11 +26,14 @@ vmlinuz-4.11.12-amd64
 vmlinuz-4.12.4-amd64
 
 vmlinuz-4.19.1-i386
+```
 
 * Извикване и изхорд:
 
+```
 $ ./task1.sh ./kern/ amd64
 
 vmlinuz-4.12.4-amd64
+```
 
 [Solution](https://github.com/Svetlin12/Linux-Shell-and-C-files/blob/master/FMITasks/Task06-Solution.sh)
