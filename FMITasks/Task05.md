@@ -9,33 +9,39 @@
 
 * в ***SRC*** (/src) има следните файлове:
 
-**/src/foof.txt**
+```
+/src/foof.txt
 
-**/src/1/bar.txt**
+/src/1/bar.txt
 
-**/src/1/foo.txt**
+/src/1/foo.txt
 
-**/src/2/1/foobar.txt**
+/src/2/1/foobar.txt
 
-**/src/2/3/barf.txt**
+/src/2/3/barf.txt
+```
 
 * ***DST*** (/dst) е празна директория
-* зададения низ е foo
+* зададения низ е `foo`
 
 *Резултат:*
 
 * в ***SRC*** има следните файлове:
 
-**/src/1/bar.txt**
+```
+/src/1/bar.txt
 
-**/src/2/3/barf.txt**
+/src/2/3/barf.txt
+```
 
 * в ***DST*** има следните файлове:
 
-**/dst/foof.txt**
+```
+/dst/foof.txt
 
-**/dst/1/foo.txt**
+/dst/1/foo.txt
 
-**/dst/2/1/foobar.txt**
+/dst/2/1/foobar.txt
+```
 
 [Solution](https://github.com/Svetlin12/Linux-Shell-and-C-files/blob/master/FMITasks/Task05-Solution.sh)
