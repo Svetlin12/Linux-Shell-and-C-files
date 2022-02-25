@@ -10,12 +10,12 @@ DST=$2
 ABC=$3
 
 if [ ! -d "${SRC}" ]; then
-	echo "error: ${SRC} is not a directory
+	echo "error: ${SRC} is not a directory"
 	exit 2
 fi
 
 if [ ! -d "${DST}" ]; then
-	echo "error: ${DST} is not a directory
+	echo "error: ${DST} is not a directory"
 	exit 3
 fi
 
