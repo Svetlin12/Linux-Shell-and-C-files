@@ -20,37 +20,41 @@
 
 *Примерен входен файл:*
 
-**$ cat z1.txt**
+```
+$ cat z1.txt
 
-**FOO=73**
+FOO=73
 
-**BAR=42**
+BAR=42
 
-**BAZ=**
+BAZ=
 
-**ENABLED_OPTIONS=a b c d**
+ENABLED_OPTIONS=a b c d
 
-**ENABLED_OPTIONS_EXTRA=c e f**
-
+ENABLED_OPTIONS_EXTRA=c e f
+```
 
 
 *Примерно извикване:*
 
-**$ ./a.sh z1.txt ENABLED_OPTIONS ENABLED_OPTIONS_EXTRA**
+`$ ./a.sh z1.txt ENABLED_OPTIONS ENABLED_OPTIONS_EXTRA`
 
 
 *Изходен файл:*
 
-**$ cat z1.txt**
+```
+$ cat z1.txt
 
-**FOO=73**
+FOO=73
 
-**BAR=42**
+BAR=42
 
-**BAZ=**
+BAZ=
 
-**ENABLED_OPTIONS=a b c d**
+ENABLED_OPTIONS=a b c d
 
-**ENABLED_OPTIONS_EXTRA=e f**
+ENABLED_OPTIONS_EXTRA=e f
+
+```
 
 [Solution](https://github.com/Svetlin12/Linux-Shell-and-C-files/blob/master/FMITasks/Task03-Solution.sh)
